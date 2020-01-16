@@ -25,13 +25,14 @@ const Brush = function() {
 	};
 
 	this.hover = function({ canvas, clientX, clientY }) {
-		const left = Math.floor(clientX / this.scale) * this.scale + "px";
+		const left =
+			Math.floor(clientX / this.scale) * this.scale +
+			window.scrollX +
+			"px";
 		const top =
 			Math.floor(clientY / this.scale) * this.scale +
 			window.scrollY +
 			"px";
-
-		console.log({ clientY, scrollY: window.scrollY });
 
 		$(this.cursor).css({
 			left,

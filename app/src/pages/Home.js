@@ -18,7 +18,7 @@ const Home = () => {
 			</Jumbotron>
 			<Jumbotron>
 				<h2>View your previous projects</h2>
-				<Link to="create">
+				<Link to="projects">
 					<Button>Go</Button>
 				</Link>
 			</Jumbotron>
