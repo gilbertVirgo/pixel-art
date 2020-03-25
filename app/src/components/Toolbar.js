@@ -12,13 +12,13 @@ const Toolbar = ({ brush }) => {
 
 	React.useEffect(() => {
 		brush.setSize(brushSize);
-	}, [brushSize]);
+	}, [brush, brushSize]);
 
 	React.useEffect(() => {
 		console.log(brushColor);
 
 		brush.setColor(brushColor);
-	}, [brushColor]);
+	}, [brush, brushColor]);
 
 	return (
 		<div style={{ width: 400 }}>
@@ -37,9 +37,12 @@ const Toolbar = ({ brush }) => {
 					</Col>
 					<Col>
 						<Form.Label>Color (px)</Form.Label>
-						<SketchPicker
-							color={brushColor}
-							onChangeComplete={({ hex }) => setBrushColor(hex)}
+						<Form.Control
+							type="color"
+							value={brushColor}
+							onChange={({ target: { value } }) =>
+								setBrushColor(value)
+							}
 						/>
 					</Col>
 				</Row>

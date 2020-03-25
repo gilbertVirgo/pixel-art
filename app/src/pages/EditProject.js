@@ -1,71 +1,78 @@
 import React from "react";
-import Toolbar from "../components/Toolbar";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import Brush from "../brush";
-import { applyImageURI } from "../functions";
+import Frame from "../components/Frame";
+
+const getProjects = () => {
+	return JSON.parse(window.localStorage.getItem("projects"));
+};
+
+const getProjectIndex = uid => {
+	const projects = getProjects();
+	const index = projects.findIndex(({ uid: projectId }) => projectId === uid);
+
+	return index;
+};
+
+const saveProjects = projects => {
+	window.localStorage.setItem("projects", JSON.stringify(projects));
+};
 
 const EditProject = ({ uid }) => {
-	const scale = 10;
-	const canvas = React.useRef(null);
-	const [context, setContext] = React.useState(null);
-	const [data, setData] = React.useState({ width: 0, height: 0 });
-	const [brush, setBrush] = React.useState(null);
+	const [data, setData] = React.useState({ width: 0, height: 0, frames: [] });
 
-	const handleSave = () => {
-		const projects = JSON.parse(localStorage.getItem("projects"));
-		const index = projects.findIndex(
-			({ uid: projectId }) => projectId === uid
-		);
+	const handleSave = ({ uri, frameIndex }) => {
+		const projects = getProjects();
+		const index = getProjectIndex(uri);
 
-		projects[index].uri = context.canvas.toDataURL("image/png", 1);
+		console.log("project", projects[index]);
 
-		localStorage.setItem("projects", JSON.stringify(projects));
+		projects[index].frames[frameIndex].uri = uri;
+
+		saveProjects(projects);
+	};
+
+	const handleAddFrame = () => {
+		const projects = getProjects();
+		const index = getProjectIndex(uid);
+
+		projects[index].frames.push({
+			uri: ""
+		});
+
+		saveProjects(projects);
+		window.location.reload();
 	};
 
 	React.useEffect(() => {
-		const projects = JSON.parse(window.localStorage.getItem("projects"));
+		const projects = getProjects();
+		const index = getProjectIndex(uid);
 
 		if (projects) {
-			setData(projects.find(({ uid: projectId }) => projectId === uid));
-		} else {
+			setData(projects[index]);
 		}
-	}, []);
-
-	React.useEffect(() => {
-		if (canvas.current) {
-			setContext(canvas.current.getContext("2d"));
-		}
-	}, [canvas]);
-
-	React.useEffect(() => {
-		if (context) {
-			if (data) {
-				applyImageURI({ uri: data.uri, context });
-			}
-
-			let brush = new Brush();
-			brush.init(context);
-
-			setBrush(brush);
-		}
-	}, [context, data]);
+	}, [uid]);
 
 	return (
 		<React.Fragment>
 			<h1>Edit Project</h1>
 			<hr />
-			{brush && <Toolbar brush={brush} />}
-			<Form.Group>
-				<canvas
-					style={{ border: "2px solid lightgray", display: "block" }}
-					width={scale * data.width}
-					height={scale * data.height}
-					ref={canvas}
-				/>
-			</Form.Group>
-			<Form.Group>
-				<Button onClick={handleSave}>Save</Button>
+			{data && (
+				<div style={{ clear: "both" }}>
+					{data.frames.map((frame, frameIndex) => (
+						<Frame
+							data={frame}
+							width={data.width}
+							height={data.height}
+							onSave={uri => handleSave({ uri, frameIndex })}
+						/>
+					))}
+				</div>
+			)}
+			<Form.Group style={{ clear: "both" }}>
+				<Button variant="secondary" onClick={handleAddFrame}>
+					Add Frame
+				</Button>
 			</Form.Group>
 		</React.Fragment>
 	);

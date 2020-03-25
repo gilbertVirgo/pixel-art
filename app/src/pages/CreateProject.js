@@ -17,7 +17,11 @@ const CreateProject = ({ history }) => {
 			uid,
 			width,
 			height,
-			uri: ""
+			frames: [
+				{
+					uri: ""
+				}
+			]
 		};
 
 		let projects = [];
@@ -32,10 +36,6 @@ const CreateProject = ({ history }) => {
 		);
 		history.push(`edit/${uid}`);
 	};
-
-	React.useEffect(() => {
-		console.log({ width, height });
-	}, [width, height]);
 
 	return (
 		<React.Fragment>
